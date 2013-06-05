@@ -1,0 +1,83 @@
+<apex:page controller="AGrepController" readOnly="true">
+<style type="text/css">
+    .pbBody {
+        background-color:#000000 !important;
+    }
+</style>
+
+
+    <!--------------------------->
+    <!-- Input Panel           -->
+    <!--------------------------->
+    <apex:outputPanel id="input_panel_id">
+        <apex:form >
+            <!-- Component -->
+            <apex:inputText value="{!inputStr}" id="input_str_id" size="40" />
+            
+            <!-- Button -->
+            <apex:commandButton action="{!doGrep}" value="GREP" rerender="output_panel_id, msg_panel_id" status="status"/><p/>
+            
+            <!-- Target component -->
+            <apex:outputText value="Target component:" style="color:#C0C0C0" />
+            <apex:selectRadio id="input_component_id" value="{!inputComponent}">
+                <apex:selectOption itemValue="ApexClass" itemLabel="Class"/>
+                <apex:selectOption itemValue="ApexTrigger" itemLabel="Trigger"/>
+                <apex:selectOption itemValue="ApexPage" itemLabel="VF Page"/>
+                <apex:selectOption itemValue="ApexComponent" itemLabel="Component"/>
+            </apex:selectRadio>
+            
+            <!-- Search option -->
+            <apex:outputText value="Option:" style="color:#C0C0C0" />
+            <apex:selectRadio id="input_component_ignorecase_id" value="{!inputOptionIgnoreCase}" >
+                <apex:selectOption itemValue="" itemLabel="Case sensitive"/>
+                <apex:selectOption itemValue="i" itemLabel="Case Insensitive"/>
+            </apex:selectRadio>
+            
+            <!-- Search option -->
+            <apex:outputText value="Option:" style="color:#C0C0C0" />
+            <apex:selectRadio id="input_component_onlyfiles_id" value="{!inputOptionOnlyFiles}" >
+                <apex:selectOption itemValue="l" itemLabel="Print name"/>
+                <apex:selectOption itemValue="" itemLabel="Print name and line"/>
+            </apex:selectRadio>
+            
+        </apex:form>
+    </apex:outputPanel>
+    
+    
+    <!--------------------------->
+    <!-- Message Panel  -->
+    <!--------------------------->
+    <apex:outputPanel id="msg_panel_id">
+        <apex:pageMessages showDetail="true" />
+    </apex:outputPanel>
+    
+    
+    <!--------------------------->
+    <!-- Output Panel     -->
+    <!--------------------------->
+    <apex:outputPanel id="output_panel_id" style="color:#FFFFFF">
+        <apex:actionStatus startstyle="color:#808080" startText="Searching ..." stopText="Done" id="status">
+            <apex:facet name="stop">
+                
+                <apex:pageBlock title="{!inputComponent}: {!matchedCount} hit" id="result_id" rendered="{!isSearched}">
+                    <apex:repeat value="{!resultSetList}" var="rdsList">
+                        <apex:repeat value="{!rdsList.targetComponentName}" var="tcName">
+                                <apex:dataTable value="{!rdsList.lineMap}" var="lineMapKey" columnsWidth="200px,70px" cellspacing="5%" bgcolor="#000000">
+                                    <apex:column >
+                                        <apex:outputLink value="{!instanceURL}/{!rdsList.targetComponentId}" style="color:#FFFFFF">{!rdsList.targetComponentName}</apex:outputLink>
+                                    </apex:column>
+                                    <!--
+                                    <apex:column value="line#{!lineMapKey}" style="color:#FFFFFF" />
+                                    -->
+                                    <apex:column value="{!IF(lineMapKey=NULL, "", lineMapKey)}" style="color:#FFFFFF" />
+                                    <apex:column value="{!rdsList.lineMap[lineMapKey]}" style="color:#FFFFFF" />
+                                </apex:dataTable>
+                        </apex:repeat>
+                    </apex:repeat>
+                </apex:pageBlock>
+                
+            </apex:facet>
+        </apex:actionStatus>
+    </apex:outputPanel>
+
+</apex:page>
