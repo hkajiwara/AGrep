@@ -1,8 +1,8 @@
-# AGrep
+# A*Grep
 
 _Grep application to search Apex class, trigger, page and component_
 
-## Capture
+## Screenshot
 
 ![my image](img/capture.jpg)
 
