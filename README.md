@@ -2,6 +2,10 @@
 
 _Grep application to search Apex class, trigger, page and component_
 
+* Search target: Apex Classes, Apex Triggers, Visualforce Pages and components
+* Option       : "-i" (case Insensitive)
+* Option       : "-l" (files with matches)
+
 ## Screenshot
 
 ![my image](img/capture.jpg)
