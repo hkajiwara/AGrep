@@ -27,3 +27,6 @@ $ ant deploy
 
 Run *AGrepController_TEST.cls*
 
+## License
+
+Released under the [MIT Licenses](http://opensource.org/licenses/MIT)
