@@ -2,6 +2,10 @@
 
 _Grep application to search Apex class, trigger, page and component_
 
+## Capture
+
+![my image](img/capture.jpg)
+
 ## Deploying
 
 1. Install Salesforce Migration Tool  
