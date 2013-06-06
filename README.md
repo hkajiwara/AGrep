@@ -22,6 +22,7 @@ sf.password=<password>
 ```
 $ ant deploy
 ```
+4. Make *A*Grep* tab visible in your profile
 
 ## Testing
 
