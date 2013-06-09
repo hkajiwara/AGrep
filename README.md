@@ -8,7 +8,7 @@ _Grep application to search Apex class, trigger, page and component_
 
 ## Screenshot
 
-![my image](img/capture.jpg)
+![my image](img/screenshot.png)
 
 ## Deploying
 
