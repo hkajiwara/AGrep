@@ -1,21 +1,33 @@
 <apex:page controller="AGrepController" readOnly="true">
+
+<!-- Style -->
 <style type="text/css">
     .pbBody {
         background-color:#000000 !important;
     }
 </style>
 
+<!-- JavaScript -->
+<script type="text/javascript">
+    function validateInputStr() {
+        if (document.getElementById('{!$Component.input_form_id.input_str_id}').value == "") {
+            alert("Input the search key");
+            return false;
+        }
+        return true;
+    }
+</script>
 
     <!--------------------------->
     <!-- Input Panel           -->
     <!--------------------------->
     <apex:outputPanel id="input_panel_id">
-        <apex:form >
-            <!-- Component -->
-            <apex:inputText value="{!inputStr}" id="input_str_id" size="40" />
-            
+        <apex:form id="input_form_id" >
+            <!-- Input String -->
+            <apex:inputText value="{!inputStr}" id="input_str_id" size="40" style="background-color:#000000; color:#FFFFFF; border: 3px  #808080 solid; padding: 4px;" />
+
             <!-- Button -->
-            <apex:commandButton action="{!doGrep}" value="GREP" rerender="output_panel_id, msg_panel_id" status="status"/><p/>
+            <apex:commandButton action="{!doGrep}" value="GREP" onclick="if(!validateInputStr()){return false}" rerender="output_panel_id, msg_panel_id" status="status"/><p/>
             
             <!-- Target component -->
             <apex:outputText value="Target component:" style="color:#C0C0C0" />
@@ -42,7 +54,7 @@
             
         </apex:form>
     </apex:outputPanel>
-    
+
     
     <!--------------------------->
     <!-- Message Panel  -->
@@ -53,7 +65,7 @@
     
     
     <!--------------------------->
-    <!-- Output Panel    -->
+    <!-- Output Panel   -->
     <!--------------------------->
     <apex:outputPanel id="output_panel_id" style="color:#FFFFFF">
         <apex:actionStatus startstyle="color:#808080" startText="Searching ..." stopText="Done" id="status">

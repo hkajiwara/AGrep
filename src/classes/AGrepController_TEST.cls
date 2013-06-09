@@ -196,6 +196,7 @@ private class AGrepController_TEST {
 	 * doGrep() for an enclosed word with double quotations
 	 * Expected: getMatchedCount() returns more than 1
 	 */ 
+	/* Obsolue
 	static testMethod void doGrepTest_inputStr1() {
 		AGrepController agc = new AGrepController();
 		agc.setInputStr('\"static testMethod void doGrepTest_inputStr1\"');
@@ -212,11 +213,13 @@ private class AGrepController_TEST {
 		}
 		Test.stopTest();
 	}
+	*/
 	
 	/**
 	 * doGrep() for an enclosed word with double quotations
 	 * Expected: getMatchedCount() returns more than 1
 	 */
+	/* Obsolute
 	static testMethod void doGrepTest_inputStr2() {
 		AGrepController agc = new AGrepController();
 		agc.setInputStr('\"doGrepTest_inputStr2\"');
@@ -233,16 +236,57 @@ private class AGrepController_TEST {
 		}
 		Test.stopTest();
 	}
+	*/
+
+	/**
+	 * isMatched() for Exception
+	 * Expected: AGrepException with cause01 happens
+	 */
+	static testMethod void isMatchedTest_AGrepExceptionCause01() {
+		AGrepController agc = new AGrepController();
+		agc.setInputStr('');
+		agc.inputComponent = 'ApexClass';
+		agc.inputOptionIgnoreCase = false;
+		agc.inputOptionOnlyFiles = false;
+		agc.setMaxScriptRatio(Double.valueOf('0.0001'));
+		
+		Test.startTest();
+		try {
+			agc.doGrep();
+		} catch(AGrepException e) {
+			System.assert(true);
+		}
+		Test.stopTest();
+	}
+	
+	/**
+	 * putResultSet() for Exception
+	 * Expected: AGrepException with cause02 happens
+	 */
+	static testMethod void putResultSetTest_AGrepExceptionCause02() {
+		AGrepController agc = new AGrepController();
+		agc.setInputStr('.*');
+		agc.inputComponent = 'ApexClass';
+		agc.inputOptionIgnoreCase = false;
+		agc.inputOptionOnlyFiles = true;
+		agc.setMaxRecord(2);
+		
+		Test.startTest();
+		try {
+			agc.doGrep();
+		} catch(AGrepException e) {
+			System.assert(true);
+		}
+		Test.stopTest();
+	}
 	
 	/**
 	 * putAllResultSet() for Exception
-	 * Expected: AGrepException happens
+	 * Expected: AGrepException with cause02 happens
 	 */
-	static testMethod void putAllResultSetTest() {
+	static testMethod void putAllResultSetTest_AGrepExceptionCause02() {
 		AGrepController agc = new AGrepController();
-		agc.setInputStr('putAllResultSetTest');
-		// Dummy
-		agc.setInputStr('putAllResultSetTest');
+		agc.setInputStr('.*');
 		agc.inputComponent = 'ApexClass';
 		agc.inputOptionIgnoreCase = false;
 		agc.inputOptionOnlyFiles = false;
@@ -258,10 +302,10 @@ private class AGrepController_TEST {
 	}
 	
 	/**
-	 * putAllResultSet() for Exception
-	 * Expected: StringException happens then getMatchedCount() returns 0
+	 * isMatched() for Exception
+	 * Expected: StringException happens
 	 */
-	static testMethod void doGrepTest_invalid_regex() {
+	static testMethod void isMatchedTest_StringException() {
 		AGrepController agc = new AGrepController();
 		agc.setInputStr('*');
 		agc.inputComponent = 'ApexClass';
@@ -269,11 +313,10 @@ private class AGrepController_TEST {
 		agc.inputOptionOnlyFiles = false;
 		
 		Test.startTest();
-		agc.doGrep();
-		if (agc.getMatchedCount() == 0) {
+		try {
+			agc.doGrep();
+		} catch(StringException e) {
 			System.assert(true);
-		} else {
-			System.assert(false);
 		}
 		Test.stopTest();
 	}
