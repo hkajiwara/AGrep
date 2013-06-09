@@ -9,8 +9,8 @@ public class AGrepController {
 	public String inputStr;
 	public Integer matchedCount;
 	public String inputComponent {get; set;}
-	public String inputOptionIgnoreCase {get; set;}
-	public String inputOptionOnlyFiles {get; set;}
+	public Boolean inputOptionIgnoreCase {get; set;}
+	public Boolean inputOptionOnlyFiles {get; set;}
 	public Boolean isSearched {get; set;}
 	public String instanceURL {
 		get {
@@ -23,8 +23,8 @@ public class AGrepController {
 	 */
 	public AGrepController() {
 		this.inputComponent = AGrepConfig.APEX_CLASS;
-		this.inputOptionIgnoreCase = '';
-		this.inputOptionOnlyFiles = 'l';
+		this.inputOptionIgnoreCase = false;
+		this.inputOptionOnlyFiles = true;
 		this.matchedCount = 0;
 		this.maxRecord = AGrepConfig.MAX_RECORD;
 		this.isSearched = false;
@@ -38,35 +38,39 @@ public class AGrepController {
 		List<SObject> targetComponentList = getTargetComponentList();
 		// for earch target component
 		for (Integer i = 0 ; i < targetComponentList.size(); i++) {
-			String targetStr = eliminateLineBreak(targetComponentList.get(i));
+			String targetStr = getComponentBody(targetComponentList.get(i));
 			Boolean isAllMatch = false;
-			// for earch input search key
-			for (String inputKey : inputKeyList) {
-				if (isMatched(inputKey, targetStr)) {
-					isAllMatch = true;
-				} else {
-					isAllMatch = false;
-					break;
-				}
-			}
 			
-			if (isAllMatch) {
-				matchedCount++;
-				if (inputOptionOnlyFiles != NULL) {
-					putResultSet(targetComponentList.get(i));
-				} else {
-					try {
-						putAllResultSet(targetComponentList.get(i));
-					} catch(AGrepException a) {
-						ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, AGrepConfig.MSG01_SUMMARY, AGrepConfig.MSG01_DETAIL));
-						return NULL;
+			try {
+				// for earch input search key
+				for (String inputKey : inputKeyList) {
+					if (isMatched(inputKey, targetStr)) {
+						isAllMatch = true;
+					} else {
+						isAllMatch = false;
+						break;
 					}
 				}
+				
+				if (isAllMatch) {
+					matchedCount++;
+					if (inputOptionOnlyFiles) {
+						putResultSet(targetComponentList.get(i));
+					} else {
+						putAllResultSet(targetComponentList.get(i));
+					}
+				}
+			} catch (StringException e) {
+				ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, e.getTypeName(), e.getMessage()));
+				return NULL;
+			} catch(AGrepException e) {
+				ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, AGrepConfig.AGPEXP_SUMMARY, AGrepConfig.AGPEXP_DETAIL));
+				return NULL;
 			}
 			// Clear component
 			targetComponentList.set(i, NULL);
 		}
-		return null;
+		return NULL;
 	}
 	
 	/**
@@ -98,39 +102,44 @@ public class AGrepController {
 	}
 	
 	/**
-	 * Eliminate line break.
+	 * Get Body or Markup of component.
 	 */
-	private String eliminateLineBreak(SObject targetObject) {
-		String eliminatedStr = '';
+	private String getComponentBody(SObject targetObject) {
+		String componentBody = '';
 		
 		if (inputComponent == AGrepConfig.APEX_CLASS) {
-			eliminatedStr = ((ApexClass)targetObject).Body.replaceAll(AGrepConfig.LINEBREAK,'');
+			componentBody = ((ApexClass)targetObject).Body;
 		} else if (inputComponent == AGrepConfig.APEX_TRIGGER) {
-			eliminatedStr = ((ApexTrigger)targetObject).Body.replaceAll(AGrepConfig.LINEBREAK,'');
+			componentBody = ((ApexTrigger)targetObject).Body;
 		} else if (inputComponent == AGrepConfig.APEX_PAGE) {
-			eliminatedStr = ((ApexPage)targetObject).Markup.replaceAll(AGrepConfig.LINEBREAK,'');
+			componentBody = ((ApexPage)targetObject).Markup;
 		} else if (inputComponent == AGrepConfig.APEX_COMPONENT) {
-			eliminatedStr = ((ApexComponent)targetObject).Markup.replaceAll(AGrepConfig.LINEBREAK,'');
+			componentBody = ((ApexComponent)targetObject).Markup;
 		} else {
 			// ToDo
 		}
-		return eliminatedStr;
+		return componentBody;
 	}
-	
+
 	/**
-	 * Search 
+	 * Judge whether the input key is matched to the target string.
 	 */
 	private Boolean isMatched(String key, String target) {
-		if (inputOptionIgnoreCase == NULL) {
-			inputOptionIgnoreCase = '';
-		}		
-		if (Pattern.matches('.*(?' + inputOptionIgnoreCase + ')' + key + '.*', target)) {
-			return true;
+		Boolean matched = false;
+		
+		Pattern ptn;
+		if (inputOptionIgnoreCase) {
+			ptn = Pattern.compile('(?im)' + key);
 		} else {
-			return false;
+			ptn = Pattern.compile('(?m)' + key);
 		}
+		Matcher mtch = ptn.matcher(target);
+		
+		while (mtch.find()) {
+			matched = true;
+		}
+		return matched;
 	}
-	
 	
 	/**
 	 * Put only the matched id and name to the map
@@ -202,7 +211,7 @@ public class AGrepController {
 					resultSetList.add(rds);
 					
 					if (resultSetList.size() > maxRecord) {
-						throw new AGrepException(AGrepConfig.MSG01_EXP);
+						throw new AGrepException(AGrepConfig.AGPEXP_SUMMARY);
 					}
 				}
 			}
@@ -227,32 +236,21 @@ public class AGrepController {
 		String tmpStr = '';
 		for (String word : str.split(AGrepConfig.WHITESPACE)) {
 			if (word.indexOf('"') == 0 && word.lastIndexOf('"') == word.length()-1) {
-				inputKeyList.add(escapteString(word.replace('"', '')));
+				inputKeyList.add(word.replace('"', ''));
 			} else if (word.indexOf('"') == 0) {
 				tmpStr += word.replace('"', '') + AGrepConfig.WHITESPACE;
 			} else if (word.lastIndexOf('"') == word.length()-1) {
 				tmpStr += word.replace('"', '');
-				inputKeyList.add(escapteString(tmpStr));
+				inputKeyList.add(tmpStr);
 				tmpStr = '';
 			} else {
 				if (tmpStr != '') {
 					tmpStr += word + AGrepConfig.WHITESPACE;
 				} else {
-					inputKeyList.add(escapteString(word));
+					inputKeyList.add(word);
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Escapape input string
-	 */
-	private String escapteString(String str) {
-		String escaptedStr = str;
-		for (String escapeStr : (AGrepConfig.ESCAPESTRING).split(',')) {
-			escaptedStr = escaptedStr.replace(escapeStr, '\\' + escapeStr);
-		}		
-		return escaptedStr;
 	}
 	
 	/**
@@ -268,7 +266,7 @@ public class AGrepController {
 	public void setMaxRecord(Integer mr) {
 		this.maxRecord = mr;
 	}
-	
+
 	/**
 	 * Result set class
 	 */

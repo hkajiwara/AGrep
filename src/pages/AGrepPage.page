@@ -29,15 +29,15 @@
             <!-- Search option -->
             <apex:outputText value="Option:" style="color:#C0C0C0" />
             <apex:selectRadio id="input_component_ignorecase_id" value="{!inputOptionIgnoreCase}" >
-                <apex:selectOption itemValue="" itemLabel="Case sensitive"/>
-                <apex:selectOption itemValue="i" itemLabel="Case Insensitive"/>
+                <apex:selectOption itemValue="false" itemLabel="Case sensitive"/>
+                <apex:selectOption itemValue="true" itemLabel="Case Insensitive"/>
             </apex:selectRadio>
             
             <!-- Search option -->
             <apex:outputText value="Option:" style="color:#C0C0C0" />
             <apex:selectRadio id="input_component_onlyfiles_id" value="{!inputOptionOnlyFiles}" >
-                <apex:selectOption itemValue="l" itemLabel="Print name"/>
-                <apex:selectOption itemValue="" itemLabel="Print name and line"/>
+                <apex:selectOption itemValue="true" itemLabel="Print name"/>
+                <apex:selectOption itemValue="false" itemLabel="Print name and line"/>
             </apex:selectRadio>
             
         </apex:form>
@@ -53,7 +53,7 @@
     
     
     <!--------------------------->
-    <!-- Output Panel     -->
+    <!-- Output Panel    -->
     <!--------------------------->
     <apex:outputPanel id="output_panel_id" style="color:#FFFFFF">
         <apex:actionStatus startstyle="color:#808080" startText="Searching ..." stopText="Done" id="status">
