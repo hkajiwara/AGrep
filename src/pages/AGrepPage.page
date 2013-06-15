@@ -1,20 +1,23 @@
-<apex:page controller="AGrepController" readOnly="true">
+<apex:page controller="AGrepController" readOnly="true" id="agrep_page_id" >
 
 <!-- Style -->
 <style type="text/css">
     .pbBody {
         background-color:#000000 !important;
     }
+    .inputTextStyle {
+        background-color:#000000;
+        color:#FFFFFF;
+        border: 3px #808080 solid;
+        padding: 4px;
+    }
 </style>
 
 <!-- JavaScript -->
 <script type="text/javascript">
-    function validateInputStr() {
-        if (document.getElementById('{!$Component.input_form_id.input_str_id}').value == "") {
-            alert("Input the search key");
-            return false;
-        }
-        return true;
+    function setInputHidden() {
+        var inputHidden = document.getElementById('agrep_page_id:input_form_id:input_hidden_id');
+        inputHidden.value = document.getElementById('input_text_id').value;
     }
 </script>
 
@@ -24,10 +27,11 @@
     <apex:outputPanel id="input_panel_id">
         <apex:form id="input_form_id" >
             <!-- Input String -->
-            <apex:inputText value="{!inputStr}" id="input_str_id" size="40" style="background-color:#000000; color:#FFFFFF; border: 3px  #808080 solid; padding: 4px;" />
+            <input id="input_text_id" size="45" class="inputTextStyle" placeholder="Search key ..."/>
+            <apex:inputHidden id="input_hidden_id" value="{!inputStr}" />
 
             <!-- Button -->
-            <apex:commandButton action="{!doGrep}" value="GREP" onclick="if(!validateInputStr()){return false}" rerender="output_panel_id, msg_panel_id" status="status"/><p/>
+            <apex:commandButton action="{!doGrep}" value="GREP" onclick="setInputHidden();" rerender="output_panel_id, msg_panel_id" status="status"/><p/>
             
             <!-- Target component -->
             <apex:outputText value="Target component:" style="color:#C0C0C0" />
