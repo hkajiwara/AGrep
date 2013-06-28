@@ -1,3 +1,7 @@
+/**
+ * AGrepConfig
+ * @author Hiroki Kajiwara
+ */
 public with sharing class AGrepConfig {
 	public static final String WHITESPACE 	= ' ';
 	public static final String LINEBREAK		= '\n';
@@ -14,5 +18,4 @@ public with sharing class AGrepConfig {
 	public static final String AGPEXP_CAUSE02	= 'The result has not been completed due to too many mached records. Please GREP again with the key to lower the selectivity or use \"Case sensitive\" and \"Print name\" option.';
 	public static final Integer MAX_RECORD	= 1900;
 	public static final Double MAX_SCRIPT_RATIO	= 0.9995;
-	
 }

@@ -1,5 +1,6 @@
 /**
  * AGrepController
+ * @author Hiroki Kajiwara
  */
 public class AGrepController {
 	private List<String> inputKeyList;
